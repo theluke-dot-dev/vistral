@@ -1,0 +1,13 @@
+# Ignore Python-related files
+__pycache__/
+
+# Pytest & Coverage
+.pytest_cache
+.coverage
+htmlcov
+
+# Ignore IDE files
+.idea/
+
+# Ignore local configuration
+.env

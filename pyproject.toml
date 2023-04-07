@@ -1,0 +1,77 @@
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
+
+[tool.black]
+line-length = 120
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version = "0.1.0a0"
+version_files = ["pyproject.toml:version", "src/vistral/__version__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "def __repr__",
+  "def __str__",
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+  "if typing.TYPE_CHECKING:",
+  "pass",
+  "pragma: no cover",
+  "raise AssertionError",
+  "raise NotImplementedError"
+]
+
+[tool.coverage.run]
+branch = true
+omit = []
+source = ["src/"]
+
+[tool.importlinter]
+include_external_packages = true
+root_package = "vistral"
+
+[tool.isort]
+known_vistral = "vistral"
+line_length = 120
+profile = "black"
+sections = "FUTURE,STDLIB,THIRDPARTY,VISTRAL,FIRSTPARTY,LOCALFOLDER"
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_unimported = true
+disallow_untyped_defs = true
+exclude = [
+  "(^|/)tests/"
+]
+no_implicit_optional = true
+plugins = [
+  "vistral.contrib.mypy"
+]
+show_error_codes = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.poetry]
+authors = ["Łukasz Wolak"]
+description = ""
+name = "vistral"
+packages = [{from = "src", include = "vistral"}]
+readme = "README.md"
+version = "0.1.0a0"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+commitizen = "^2.42.1"
+import-linter = "^1.8.0"
+isort = "^5.12.0"
+mypy = "^1.1.1"
+pytest = "^7.2.2"
+pytest-cov = "^4.0.0"
+pyupgrade = "^3.3.1"
+toml-sort = "^0.23.0"

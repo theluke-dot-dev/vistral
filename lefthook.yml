@@ -1,0 +1,33 @@
+source_dir: "scripts"
+
+commit-msg:
+  commands:
+    lint-commit:
+      run: poetry run cz check --commit-msg-file {1}
+pre-commit:
+  parallel: true
+  commands:
+    markdownlint:
+      glob: "*.md"
+      run: npx markdownlint-cli2-fix {staged_files} && git add {staged_files}
+    pyproject:
+      glob: "pyproject.toml"
+      run: poetry run toml-sort --all --in-place pyproject.toml && poetry lock --no-update && git add {pyproject.toml,poetry.lock}
+    pyupgrade:
+      glob: "*.py"
+      run: poetry run pyupgrade --py39-plus {staged_files}
+    black:
+      glob: "*.py"
+      run: poetry run black {staged_files} && git add {staged_files}
+    isort:
+      glob: "*.py"
+      run: poetry run isort {staged_files} && git add {staged_files}
+    mypy:
+      glob: "*.py"
+      run: poetry run mypy --config-file pyproject.toml src/
+    pytest:
+      glob: "*.py"
+      run: poetry run pytest
+    lint-imports:
+      glob: "*.py"
+      run: poetry run lint-imports --config ./pyproject.toml
