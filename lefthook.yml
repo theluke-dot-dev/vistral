@@ -6,6 +6,9 @@ commit-msg:
       run: poetry run cz check --commit-msg-file {1}
 pre-commit:
   parallel: true
+  scripts:
+    ensure_tools:
+      runner: python
   commands:
     markdownlint:
       glob: "*.md"
@@ -31,3 +34,6 @@ pre-commit:
     lint-imports:
       glob: "*.py"
       run: poetry run lint-imports --config ./pyproject.toml
+    hadolint:
+      glob: "Dockerfile"
+      run: docker run --rm -i hadolint/hadolint < Dockerfile
