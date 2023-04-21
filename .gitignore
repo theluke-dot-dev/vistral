@@ -1,12 +1,16 @@
 # Ignore Python-related files
 __pycache__/
+dist/
 
-# Pytest & Coverage
+# Pytest, coverage & other tools
 .pytest_cache
 .coverage
 htmlcov
+.ruff_cache/
+.mypy_cache/
+.import_linter_cache/
 
-# Ignore IDE files
+# IDE files
 .idea/
 
 # Ignore local configuration

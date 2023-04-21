@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+from shutil import which
+from typing import NewType
+
+StatusCode = NewType("StatusCode", int)
+
+
+def main() -> StatusCode:
+    tools = {
+        "docker",
+        "npx",
+        "poetry",
+    }
+    results = {}
+    for tool in tools:
+        results[tool] = which(tool) is not None
+
+    if not all(results.values()):
+        print(f"Required tools are missing: {', '.join(key for key,value in results.items() if value is False)}")
+        return StatusCode(1)
+    return StatusCode(0)
+
+
+if __name__ == "__main__":
+    exit(main())
