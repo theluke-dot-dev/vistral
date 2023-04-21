@@ -28,6 +28,9 @@ pre-commit:
     mypy:
       glob: "*.py"
       run: poetry run mypy --config-file pyproject.toml src/
+    ruff:
+      glob: "*.py"
+      run: poetry run ruff check {staged_files}
     pytest:
       glob: "*.py"
       run: poetry run pytest
