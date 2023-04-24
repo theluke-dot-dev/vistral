@@ -1,0 +1,54 @@
+name: PR
+
+on:
+  pull_request:
+    types: ["opened", "reopened", "synchronize"]
+
+jobs:
+  lint-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.4.2
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Load cached Virtual Env
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install packages
+        run: poetry install --no-interaction  --all-extras
+      - name: Activate virtualenv
+        run: |
+          source ${VENV}
+          echo PATH=${PATH} >> ${GITHUB_ENV}
+      - name: Run black
+        run: black --check src/
+      - name: Run isort
+        run: isort --check-only src/
+      - name: Run MyPy
+        run: mypy --config-file pyproject.toml src/
+      - name: Run Ruff
+        run: ruff check src/
+      - name: Run import-linter
+        run: lint-imports --config pyproject.toml
+      - name: Run toml-sort
+        run: toml-sort --all --check pyproject.toml
+      - name: Run pytest
+        run: pytest src/

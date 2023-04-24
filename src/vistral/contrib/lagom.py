@@ -1,7 +1,13 @@
 from typing import Optional, cast
 
-from lagom import Container
-from lagom.container import CallTimeContainerUpdate
+try:
+    from lagom import Container
+    from lagom.container import CallTimeContainerUpdate
+except ImportError as import_error:
+    raise ImportError(
+        f"`lagom` dependency is missing: {import_error}. "
+        + "To use LagomResolver, Re-install `vistral` with [lagom] extra dependency."
+    ) from None
 
 from vistral.commandbus.command import CommandHandler, TCommand, TCommandResult
 from vistral.commandbus.resolver import Resolver

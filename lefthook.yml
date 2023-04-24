@@ -15,7 +15,7 @@ pre-commit:
       run: npx markdownlint-cli2-fix {staged_files} && git add {staged_files}
     pyproject:
       glob: "pyproject.toml"
-      run: poetry run toml-sort --all --in-place pyproject.toml && poetry lock --no-update && git add {pyproject.toml,poetry.lock}
+      run: poetry run toml-sort pyproject.toml && poetry lock --no-update && git add {pyproject.toml,poetry.lock}
     pyupgrade:
       glob: "*.py"
       run: poetry run pyupgrade --py39-plus {staged_files}
