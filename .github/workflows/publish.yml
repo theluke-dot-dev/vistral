@@ -1,0 +1,41 @@
+name: Publish
+
+on:
+  release:
+    types: ["published"]
+  push:
+    branches: ["master", "feat/publishing-to-pypi"]
+jobs:
+  build:
+
+    name: Build and publish
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.5.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Build package
+        run: poetry build
+      - name: Publish package distributions to Test PyPI
+        if: github.event_name != 'release'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+      - name: Publish package distributions to PyPI
+        if: github.event_name == 'release'
+        uses: pypa/gh-action-pypi-publish@release/v1
