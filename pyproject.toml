@@ -54,6 +54,7 @@ warn_unused_ignores = true
 [tool.poetry]
 authors = ["Łukasz Wolak"]
 description = ""
+exclude = ["**/conftest.py", "**/tests/**/*"]
 name = "vistral"
 packages = [{from = "src", include = "vistral"}]
 readme = "README.md"
