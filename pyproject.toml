@@ -8,7 +8,7 @@ line-length = 120
 [tool.commitizen]
 name = "cz_conventional_commits"
 tag_format = "v$version"
-version = "0.1.1"
+version = "0.1.2"
 version_files = ["pyproject.toml:version", "src/vistral/__version__.py"]
 
 [tool.coverage.report]
@@ -58,7 +58,7 @@ exclude = ["**/conftest.py", "**/tests/**/*"]
 name = "vistral"
 packages = [{from = "src", include = "vistral"}]
 readme = "README.md"
-version = "0.1.1"
+version = "0.1.2"
 
 [tool.poetry.dependencies]
 python = "^3.9"
