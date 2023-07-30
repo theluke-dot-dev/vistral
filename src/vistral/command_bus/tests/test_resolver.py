@@ -1,7 +1,7 @@
 import pytest
 
-from vistral.commandbus.command import CommandHandler
-from vistral.commandbus.resolver import DefaultResolver
+from vistral.command_bus.command import CommandHandler
+from vistral.command_bus.resolver import DefaultResolver
 
 
 class TestDefaultResolver:
