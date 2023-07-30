@@ -9,8 +9,8 @@ except ImportError as import_error:
         + "To use LagomResolver, Re-install `vistral` with [lagom] extra dependency."
     ) from None
 
-from vistral.commandbus.command import CommandHandler, TCommand, TCommandResult
-from vistral.commandbus.resolver import Resolver
+from vistral.command_bus.command import CommandHandler, TCommand
+from vistral.command_bus.resolver import Resolver
 
 
 class LagomResolver(Resolver):
@@ -26,8 +26,8 @@ class LagomResolver(Resolver):
 
     def resolve_command_handler(
         self,
-        handler_cls: type[CommandHandler[TCommand, TCommandResult]],
-    ) -> CommandHandler[TCommand, TCommandResult]:
+        handler_cls: type[CommandHandler[TCommand]],
+    ) -> CommandHandler[TCommand]:
         return cast(
-            CommandHandler[TCommand, TCommandResult], self._partial(func=handler_cls)()
+            CommandHandler[TCommand], self._partial(func=handler_cls)()
         )  # TODO: add validation and runtime error once not all arguments are bound

@@ -1,4 +1,4 @@
-from vistral.commandbus.command import TCommand
+from vistral.command_bus.command import TCommand
 
 
 class CommandAlreadyRegisteredError(Exception):

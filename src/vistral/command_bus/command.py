@@ -9,13 +9,9 @@ class Command:
 
 
 TCommand = TypeVar("TCommand", bound=Command)
-TCommandResult = TypeVar("TCommandResult")
 
 
-class CommandHandler(Generic[TCommand, TCommandResult], ABC):
+class CommandHandler(Generic[TCommand], ABC):
     @abstractmethod
-    def handle(self, command: TCommand) -> TCommandResult:
+    def __call__(self, command: TCommand) -> None:
         pass
-
-
-# TODO: add some (mypy plugin?) logic to properly handle those generics

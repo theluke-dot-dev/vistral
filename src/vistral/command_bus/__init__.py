@@ -1,8 +1,6 @@
-from typing import Any
-
-from vistral.commandbus.command import Command, CommandHandler, TCommand, TCommandResult
-from vistral.commandbus.exceptions import CommandAlreadyRegisteredError, CommandHandlerNotExists
-from vistral.commandbus.resolver import DefaultResolver, Resolver
+from vistral.command_bus.command import Command, CommandHandler, TCommand
+from vistral.command_bus.exceptions import CommandAlreadyRegisteredError, CommandHandlerNotExists
+from vistral.command_bus.resolver import DefaultResolver, Resolver
 
 
 class CommandBus:
@@ -13,14 +11,14 @@ class CommandBus:
     def register(
         self,
         command_type: type[TCommand],
-        handler_type: type[CommandHandler[TCommand, TCommandResult]],
+        handler_type: type[CommandHandler[TCommand]],
     ) -> None:
         if command_type in self._handlers:
             raise CommandAlreadyRegisteredError(command_cls=command_type)
 
         self._handlers[command_type] = handler_type
 
-    def handle(self, command: TCommand) -> Any:
+    def handle(self, command: TCommand) -> None:
         command_cls = type(command)
         try:
             handler_cls = self._handlers[command_cls]
@@ -28,4 +26,4 @@ class CommandBus:
             raise CommandHandlerNotExists(command_cls=command_cls)
 
         handler = self._resolver.resolve_command_handler(handler_cls=handler_cls)
-        return handler.handle(command=command)
+        return handler(command=command)
