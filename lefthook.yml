@@ -12,7 +12,7 @@ pre-commit:
   commands:
     markdownlint:
       glob: "*.md"
-      run: npx markdownlint-cli2-fix {staged_files} && git add {staged_files}
+      run: docker run --rm -w /code -v $PWD:/code davidanson/markdownlint-cli2:v0.8.1 -- --fix {staged_files} && git add {staged_files}
     pyproject:
       glob: "pyproject.toml"
       run: poetry run toml-sort pyproject.toml && poetry lock --no-update && git add {pyproject.toml,poetry.lock}

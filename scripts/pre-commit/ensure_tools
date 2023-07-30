@@ -8,7 +8,6 @@ StatusCode = NewType("StatusCode", int)
 def main() -> StatusCode:
     tools = {
         "docker",
-        "npx",
         "poetry",
     }
     results = {}
