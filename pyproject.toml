@@ -47,9 +47,6 @@ exclude = [
   "(^|/)tests/"
 ]
 no_implicit_optional = true
-plugins = [
-  "vistral.contrib.mypy"
-]
 show_error_codes = true
 warn_return_any = true
 warn_unused_ignores = true
