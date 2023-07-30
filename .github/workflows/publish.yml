@@ -41,5 +41,4 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
       - name: Publish package distributions to PyPI
-        if: github.event_name == 'release'
         uses: pypa/gh-action-pypi-publish@release/v1
