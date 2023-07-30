@@ -88,4 +88,4 @@ src = ["src"]
 [tool.tomlsort]
 all = true
 in_place = true
-sort_first = ["python"] # TODO: once toml-sort gets fixed, move this to overrides
+sort_first = ["tool.poetry.dependencies.python"]
