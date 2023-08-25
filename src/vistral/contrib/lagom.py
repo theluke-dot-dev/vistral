@@ -10,10 +10,10 @@ except ImportError as import_error:
     ) from None
 
 from vistral.command_bus.command import CommandHandler, TCommand
-from vistral.command_bus.resolver import Resolver
+from vistral.command_bus.resolver import CommandHandlerResolver
 
 
-class LagomResolver(Resolver):
+class LagomResolver(CommandHandlerResolver):
     def __init__(
         self,
         container: Container,
