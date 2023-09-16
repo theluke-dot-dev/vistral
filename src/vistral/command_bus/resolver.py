@@ -7,8 +7,3 @@ class CommandHandlerResolver(ABC):
     @abstractmethod
     def resolve_command_handler(self, handler_cls: type[CommandHandler[TCommand]], /) -> CommandHandler[TCommand]:
         pass
-
-
-class DefaultResolver(CommandHandlerResolver):
-    def resolve_command_handler(self, handler_cls: type[CommandHandler[TCommand]], /) -> CommandHandler[TCommand]:
-        return handler_cls()
