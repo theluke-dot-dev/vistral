@@ -1,4 +1,4 @@
-from vistral.command_bus.command import Command, CommandHandler, TCommand
+from vistral.command_bus.command import BoundCommandHandlerType, CommandType, TCommand
 from vistral.command_bus.exceptions import CommandAlreadyRegisteredError, CommandHandlerNotExists
 from vistral.command_bus.resolver import CommandHandlerResolver, DefaultResolver
 
@@ -6,13 +6,9 @@ from vistral.command_bus.resolver import CommandHandlerResolver, DefaultResolver
 class CommandBus:
     def __init__(self, resolver: CommandHandlerResolver = DefaultResolver()):
         self._resolver = resolver
-        self._handlers: dict[type[Command], type[CommandHandler]] = {}
+        self._handlers: dict[CommandType, BoundCommandHandlerType] = {}
 
-    def register(
-        self,
-        command_type: type[TCommand],
-        handler_type: type[CommandHandler[TCommand]],
-    ) -> None:
+    def register(self, command_type: CommandType, handler_type: BoundCommandHandlerType) -> None:
         if command_type in self._handlers:
             raise CommandAlreadyRegisteredError.for_command(command_type)
 
