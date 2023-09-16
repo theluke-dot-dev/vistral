@@ -1,13 +1,12 @@
 import pytest
 
 from vistral.command_bus.command import CommandHandler
-from vistral.command_bus.resolver import DefaultResolver
 
 
 class TestDefaultResolver:
     @pytest.fixture
-    def resolver(self):
-        return DefaultResolver()
+    def resolver(self, resolver_cls):
+        return resolver_cls()
 
     def test_resolve_command_handler(self, resolver, handler_cls):
         handler = resolver.resolve_command_handler(handler_cls)

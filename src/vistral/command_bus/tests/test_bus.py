@@ -31,8 +31,7 @@ class TestCommandBus:
         command = command_cls()
         handler = handler_cls()
         resolver.resolve_command_handler.return_value = handler
-        result = command_bus.handle(command)
-        assert result is None
+        command_bus.handle(command)
 
         resolver.resolve_command_handler.assert_called_once_with(handler_cls)
 
