@@ -9,6 +9,7 @@ def main() -> StatusCode:
     tools = {
         "docker",
         "poetry",
+        "go-task",
     }
     results = {}
     for tool in tools:
@@ -17,6 +18,7 @@ def main() -> StatusCode:
     if not all(results.values()):
         print(f"Required tools are missing: {', '.join(key for key,value in results.items() if value is False)}")
         return StatusCode(1)
+    print("Required tools are present")
     return StatusCode(0)
 
 

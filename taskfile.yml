@@ -1,0 +1,113 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  SRC_ROOT: src
+  PYTHON_SOURCES: "{{.SRC_ROOT}}/**/*.py"
+  SCRIPTS_ROOT: scripts
+  GREETING: Hello, World!
+  CONFIG_FILE: pyproject.toml
+
+tasks:
+  check:tools: "{{.SCRIPTS_ROOT}}/ensure_tools"
+  check:
+    deps:
+      - task: check:tools
+
+  lint:black:
+    cmds:
+      - poetry run black {{.SRC_ROOT}}
+    sources:
+      - "{{.PYTHON_SOURCES}}"
+
+  lint:docker:
+    cmds:
+      - docker run --rm -i hadolint/hadolint < Dockerfile
+    sources:
+      - Dockerfile
+
+  lint:imports:
+    cmds:
+      - poetry run lint-imports --config {{.CONFIG_FILE}}
+    sources:
+      - "{{.PYTHON_SOURCES}}"
+
+  lint:isort:
+    cmds:
+      - poetry run isort {{.SRC_ROOT}}
+    sources:
+      - "{{.PYTHON_SOURCES}}"
+
+  lint:mypy:
+    cmds:
+      - poetry run mypy --config-file {{.CONFIG_FILE}} {{.SRC_ROOT}}
+    sources:
+      - "{{.PYTHON_SOURCES}}"
+
+  lint:ruff:
+    cmds:
+      - poetry run ruff check {{.SRC_ROOT}}
+    sources:
+      - "{{.PYTHON_SOURCES}}"
+  lint:pyupgrade:
+    cmds:
+      - poetry run pyupgrade --py39-plus
+    sources:
+      - "{{.PYTHON_SOURCES}}"
+
+  lint:pyproject:
+    cmds:
+      - poetry run toml-sort pyproject.toml
+      - poetry lock --no-update
+    sources:
+      - pyproject.toml
+
+  lint:yaml:
+    cmds:
+      - poetry run yamllint -d relaxed .
+
+    sources:
+      - "**/*.yml"
+      - "**/*.yaml"
+
+  lint:
+    deps:
+      - task: lint:black
+      - task: lint:docker
+      - task: lint:imports
+      - task: lint:isort
+      - task: lint:mypy
+      - task: lint:ruff
+      - task: lint:pyupgrade
+      - task: lint:pyproject
+      - task: lint:yaml
+    silent: true
+
+  lint:basic:
+    deps:
+      - task: lint:black
+      - task: lint:isort
+      - task: lint:mypy
+      - task: lint:ruff
+    silent: true
+
+
+  test:pytest:
+    cmds:
+      - poetry run pytest {{.SRC_ROOT}}
+    sources:
+      - "{{.PYTHON_SOURCES}}"
+
+  test:
+    deps:
+      - task: test:pytest
+
+  commit-msg:lint-commit: poetry run cz check --commit-msg-file {{.COMMIT_MSG_FILE}}
+  commit-msg:
+    deps:
+      - task: commit-msg:lint-commit
+
+  version:
+    cmds:
+      - echo "Add version bumping flow"
