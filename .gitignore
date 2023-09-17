@@ -15,3 +15,6 @@ htmlcov
 
 # Ignore local configuration
 .env
+
+# Taskfile cache
+.task/
