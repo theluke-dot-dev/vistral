@@ -68,7 +68,7 @@ lagom = {optional = true, version = "^2.4.1"}
 lagom = ["lagom"]
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.7.0"
+black = ">=23.7,<25.0"
 commitizen = "^3.6.0"
 import-linter = "^1.11.1"
 isort = "^5.12.0"
