@@ -60,7 +60,7 @@ class TestLagomResolver:
         # 1. Define a dependency that won't be in the container
         #    Make it require an argument that lagom won't know how to provide by default.
         class NonExistentService:
-            def __init__(self, some_required_string: str): # This will cause NonExistentService to be unresolvable
+            def __init__(self, some_required_string: str):  # This will cause NonExistentService to be unresolvable
                 self.some_required_string = some_required_string
 
         # 2. Define a command and handler that requires the missing dependency
@@ -69,7 +69,7 @@ class TestLagomResolver:
             pass
 
         class HandlerWithMissingDependency(CommandHandler[MissingDependencyCommand]):
-            def __init__(self, missing_service: NonExistentService = injectable): # Marked for injection
+            def __init__(self, missing_service: NonExistentService = injectable):  # Marked for injection
                 self.missing_service = missing_service
 
             def __call__(self, command: MissingDependencyCommand) -> None:
@@ -94,22 +94,22 @@ class TestLagomResolver:
         # When using `partial` and `injectable`, `e.dep_type` from the UnresolvableType
         # should be the dependency that `partial` was trying to inject and failed for, i.e., NonExistentService.
         assert exc_info.value.root_unresolvable_type_str == "NonExistentService"
-        
+
         # Check that the "Original lagom error for..." part is present in our custom exception's message
         # This refers to original_exception.dep_type, which is NonExistentService.
         expected_msg_lagom_intro = "Original lagom error for 'NonExistentService':"
         assert expected_msg_lagom_intro in str(exc_info.value)
-        
-        # Check that the detailed string of the original Lagom exception (which contains the chain) 
+
+        # Check that the detailed string of the original Lagom exception (which contains the chain)
         # is part of our custom exception's message.
         original_lagom_error_str = str(exc_info.value.original_exception)
         assert original_lagom_error_str in str(exc_info.value)
-        
+
         # Verify that Lagom's own error message for NonExistentService (now part of our message)
         # contains the deeper unresolvable type 'str'.
         # Lagom's UnresolvableType.__str__ should format this as "...: NonExistentService => str"
-        assert "NonExistentService" in original_lagom_error_str # The type it failed to build
-        assert "str" in original_lagom_error_str # The root cause for NonExistentService
+        assert "NonExistentService" in original_lagom_error_str  # The type it failed to build
+        assert "str" in original_lagom_error_str  # The root cause for NonExistentService
 
         # The original_exception.dep_type attribute itself should be for NonExistentService.
         assert exc_info.value.original_exception.dep_type == "NonExistentService"
@@ -120,6 +120,7 @@ class TestLagomResolver:
         the container (e.g. as a singleton), the same instance is injected into
         handlers resolved multiple times by the same resolver.
         """
+
         class SharedService:
             pass
 
@@ -145,7 +146,7 @@ class TestLagomResolver:
         # not across multiple calls to `LagomResolver.resolve_command_handler`.
         # For the same instance across `resolve_command_handler` calls, it must be a singleton
         # in the underlying container.
-        
+
         # Let's clarify the test: shared_deps in `container.partial` means that if the dependency
         # is resolved multiple times *during the construction of a single handler instance* (e.g. if multiple
         # __init__ args took SharedService, or a deeper dependency also took SharedService), those would be
@@ -154,7 +155,7 @@ class TestLagomResolver:
         # as shared, we make it a singleton in the container.
 
         shared_instance = SharedService()
-        container[SharedService] = shared_instance # Make it a singleton in the container
+        container[SharedService] = shared_instance  # Make it a singleton in the container
 
         # Pass SharedService to shared_deps for LagomResolver
         resolver_with_shared = LagomResolver(container=container, shared_deps=[SharedService])
@@ -177,6 +178,7 @@ class TestLagomResolver:
         Tests that container_updater can successfully add a dependency
         that is then resolved for the handler.
         """
+
         class DynamicService:
             pass
 
@@ -186,7 +188,7 @@ class TestLagomResolver:
 
             def __call__(self, command: DummyCommand) -> None:
                 pass
-        
+
         dynamic_instance = DynamicService()
 
         def my_updater(writable_container, _args, _kwargs):
@@ -197,7 +199,7 @@ class TestLagomResolver:
             # Changes here won't affect the original container passed to LagomResolver.
 
         resolver_with_updater = LagomResolver(container=container, container_updater=my_updater)
-        
+
         handler = resolver_with_updater.resolve_command_handler(HandlerWithDynamicDep)
 
         assert isinstance(handler.dynamic_service, DynamicService)
@@ -210,8 +212,9 @@ class TestLagomResolver:
         Tests that if container_updater does not provide a required dependency,
         UnresolvedDependencyError is raised.
         """
+
         class StillMissingService:
-            def __init__(self, some_arg_that_cannot_be_provided: str): # Add unresolvable arg
+            def __init__(self, some_arg_that_cannot_be_provided: str):  # Add unresolvable arg
                 self.some_arg_that_cannot_be_provided = some_arg_that_cannot_be_provided
 
         class HandlerWithStillMissingDep(CommandHandler[DummyCommand]):
@@ -226,8 +229,7 @@ class TestLagomResolver:
             pass
 
         resolver_with_non_providing_updater = LagomResolver(
-            container=container, 
-            container_updater=non_providing_updater
+            container=container, container_updater=non_providing_updater
         )
 
         from vistral.contrib.exceptions import UnresolvedDependencyError
@@ -240,5 +242,5 @@ class TestLagomResolver:
         assert isinstance(exc_info.value.original_exception, UnresolvableType)
         # e.dep_type from lagom should be StillMissingService as that's what `partial`
         # was trying to inject due to `injectable` marker.
-        assert exc_info.value.root_unresolvable_type_str == "StillMissingService" 
+        assert exc_info.value.root_unresolvable_type_str == "StillMissingService"
         assert "StillMissingService" in str(exc_info.value.original_exception)

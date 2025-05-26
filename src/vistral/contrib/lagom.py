@@ -55,9 +55,7 @@ class LagomResolver(CommandHandlerResolver):
 
         # Reconstruct self._partial using instance attributes
         self._partial = lambda func_to_wrap: self._container.partial(
-            func=func_to_wrap,
-            shared=self._shared_deps,
-            container_updater=self._container_updater
+            func=func_to_wrap, shared=self._shared_deps, container_updater=self._container_updater
         )
 
     def resolve_command_handler(
@@ -74,7 +72,7 @@ class LagomResolver(CommandHandlerResolver):
         :return: An instance of the command handler.
         :rtype: BoundCommandHandler
         """
-        resolved_handler_factory = self._partial(handler_cls) # Pass handler_cls as positional argument
+        resolved_handler_factory = self._partial(handler_cls)  # Pass handler_cls as positional argument
         try:
             # When the factory is called, Lagom attempts to resolve dependencies
             # for the __init__ of handler_cls that were marked with `lagom.injectable`
@@ -90,11 +88,11 @@ class LagomResolver(CommandHandlerResolver):
             # it will raise UnresolvableType. e.dep_type should refer to the
             # specific dependency that could not be resolved.
             lagom_reported_unresolvable_type_str = e.dep_type
-            
+
             raise UnresolvedDependencyError(
-                handler_cls=handler_cls, # The handler we attempted to build
-                original_exception=e, 
-                root_unresolvable_type_str=lagom_reported_unresolvable_type_str, # The specific dep Lagom failed on
+                handler_cls=handler_cls,  # The handler we attempted to build
+                original_exception=e,
+                root_unresolvable_type_str=lagom_reported_unresolvable_type_str,  # The specific dep Lagom failed on
             ) from e
         # Note: If handler_cls.__init__ has required arguments not managed by Lagom's partial
         # (i.e., not type-hinted for magic_partial or not marked `injectable` for `partial`),
