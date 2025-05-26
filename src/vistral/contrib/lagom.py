@@ -50,35 +50,55 @@ class LagomResolver(CommandHandlerResolver):
         :type container_updater: Optional[CallTimeContainerUpdate], optional
         """
         self._container = container
-        # self._shared_deps = shared_deps # Store if specific per-call singleton logic is added later
-        # self._container_updater = container_updater # Store if specific per-call update logic is added later
+        self._shared_deps = shared_deps
+        self._container_updater = container_updater
+
+        # Reconstruct self._partial using instance attributes
+        self._partial = lambda func_to_wrap: self._container.partial(
+            func=func_to_wrap,
+            shared=self._shared_deps,
+            container_updater=self._container_updater
+        )
 
     def resolve_command_handler(
         self,
         handler_cls: BoundCommandHandlerType,
     ) -> BoundCommandHandler:
         """
-        Resolves a command handler instance from its class using the Lagom container.
+        Resolves a command handler instance from its class using the Lagom container's partial application.
 
         :param handler_cls: The class of the command handler to resolve.
         :type handler_cls: BoundCommandHandlerType
-        :raises UnresolvedDependencyError: If the Lagom container fails to resolve a dependency.
+        :raises UnresolvedDependencyError: If the Lagom container fails to resolve a dependency
+                                         when the partially applied handler factory is called.
         :return: An instance of the command handler.
         :rtype: BoundCommandHandler
         """
+        resolved_handler_factory = self._partial(handler_cls) # Pass handler_cls as positional argument
         try:
-            # Using resolve (or container[handler_cls]) is the direct way to ask Lagom to build the type.
-            # It will automatically handle dependency resolution based on type hints in __init__.
-            instance = self._container.resolve(handler_cls)
-            return cast(BoundCommandHandler, instance)
+            # When the factory is called, Lagom attempts to resolve dependencies
+            # for the __init__ of handler_cls that were marked with `lagom.injectable`
+            # or if `magic_partial` was used (which it's not here by default through `self._partial`).
+            # If `handler_cls` has non-default, non-injectable args, this call itself might
+            # raise TypeError before Lagom's UnresolvableType if those args aren't provided.
+            # However, the goal is to catch Lagom's DI errors.
+            handler_instance = resolved_handler_factory()
+            return cast(BoundCommandHandler, handler_instance)
         except UnresolvableType as e:
-            # The 'e.dep_type' attribute of the caught Lagom UnresolvableType exception
-            # indicates the specific type that Lagom reported it couldn't build at this level.
-            # The full str(e) will include any deeper causal chain Lagom itself formats.
+            # If Lagom's partial application fails to resolve a dependency it was
+            # supposed to inject (e.g., an argument marked `lagom.injectable`),
+            # it will raise UnresolvableType. e.dep_type should refer to the
+            # specific dependency that could not be resolved.
             lagom_reported_unresolvable_type_str = e.dep_type
             
             raise UnresolvedDependencyError(
-                handler_cls=handler_cls,
+                handler_cls=handler_cls, # The handler we attempted to build
                 original_exception=e, 
-                root_unresolvable_type_str=lagom_reported_unresolvable_type_str,
+                root_unresolvable_type_str=lagom_reported_unresolvable_type_str, # The specific dep Lagom failed on
             ) from e
+        # Note: If handler_cls.__init__ has required arguments not managed by Lagom's partial
+        # (i.e., not type-hinted for magic_partial or not marked `injectable` for `partial`),
+        # resolved_handler_factory() might raise a TypeError directly.
+        # The current subtask focuses on UnresolvableType. Catching TypeError here could be
+        # ambiguous as it might hide programming errors in the handler's __init__ signature
+        # versus actual DI failures for dependencies Lagom was expected to provide.
