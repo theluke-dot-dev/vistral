@@ -95,13 +95,27 @@ tasks:
 
   test:pytest:
     cmds:
-      - poetry run pytest {{.SRC_ROOT}}
+      - poetry run pytest --cov {{.SRC_ROOT}}
     sources:
       - "{{.PYTHON_SOURCES}}"
+      - pyproject.toml # Coverage config is here
+
+  test:coverage-report:
+    cmds:
+      - poetry run coverage report
+    deps:
+      - task: test:pytest # Ensure tests run and .coverage file is generated first
+
+  test:coverage-html:
+    cmds:
+      - poetry run coverage html
+    deps:
+      - task: test:pytest # Ensure tests run and .coverage file is generated first
 
   test:
     deps:
       - task: test:pytest
+      # - task: test:coverage-report # Optionally make the text report part of the default test flow
 
   commit-msg:lint-commit: poetry run cz check --commit-msg-file {{.COMMIT_MSG_FILE}}
   commit-msg:
