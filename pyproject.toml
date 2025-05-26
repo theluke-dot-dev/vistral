@@ -23,11 +23,13 @@ exclude_lines = [
   "raise AssertionError",
   "raise NotImplementedError"
 ]
+show_missing = true
+skip_covered = true
 
 [tool.coverage.run]
 branch = true
 omit = []
-source = ["src/"]
+source = ["src/vistral"]
 
 [tool.importlinter]
 include_external_packages = true
