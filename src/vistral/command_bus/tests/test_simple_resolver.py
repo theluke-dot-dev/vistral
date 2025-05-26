@@ -1,5 +1,6 @@
-import pytest
 from dataclasses import dataclass  # Moved to top, before usage
+
+import pytest
 
 from vistral.command_bus.command import Command, CommandHandler
 from vistral.command_bus.resolver import SimpleCommandHandlerResolver

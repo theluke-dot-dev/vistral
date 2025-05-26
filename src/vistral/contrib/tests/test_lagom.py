@@ -77,8 +77,9 @@ class TestLagomResolver:
 
         # 3. Attempt to resolve the handler
         # We expect UnresolvedDependencyError, which wraps Lagom's UnresolvableType
-        from vistral.contrib.exceptions import UnresolvedDependencyError
         from lagom.exceptions import UnresolvableType
+
+        from vistral.contrib.exceptions import UnresolvedDependencyError
 
         with pytest.raises(UnresolvedDependencyError) as exc_info:
             resolver.resolve_command_handler(HandlerWithMissingDependency)
@@ -232,8 +233,9 @@ class TestLagomResolver:
             container=container, container_updater=non_providing_updater
         )
 
-        from vistral.contrib.exceptions import UnresolvedDependencyError
         from lagom.exceptions import UnresolvableType
+
+        from vistral.contrib.exceptions import UnresolvedDependencyError
 
         with pytest.raises(UnresolvedDependencyError) as exc_info:
             resolver_with_non_providing_updater.resolve_command_handler(HandlerWithStillMissingDep)

@@ -1,6 +1,8 @@
 from typing import Optional
-from vistral.core.exceptions import VistralError
+
 from lagom.exceptions import UnresolvableType
+
+from vistral.core.exceptions import VistralError
 
 
 class UnresolvedDependencyError(VistralError):
